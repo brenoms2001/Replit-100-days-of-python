@@ -35,7 +35,7 @@ def view(*lists):
     for item in list:
       if isinstance(item, str):
         continue
-      print(f"{item['name']:^15} | {item['date']:^15} | {item['priority']:^15}")
+      print(f"{item['name']:^25} | {item['date']:^25} | {item['priority']:^25}")
   print()
   if counter < 3:
     return True
@@ -48,15 +48,12 @@ def move(option, priority, *lists):
       if isinstance(item, str):
         continue
       if item["name"] == option:
-        print(item)
         removedItem = item
         list.remove(item)
         removedItem["priority"] = priority
   
   for list in lists:
-    print(f"{list[0]} x {removedItem['priority']}")
     if list[0] == removedItem["priority"]:
-      print("GOTCHA")
       list.append(removedItem)
       break
 
@@ -82,7 +79,7 @@ def remove(option, *lists):
         continue
       if item["name"] == option:
         sure = input("Are you sure you want to remove the item? > ").strip().lower()
-        if sure == "yes":
+        if sure == "yes" or sure == "y":
           list.remove(item)
         else:
           print("Item not removed")
