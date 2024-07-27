@@ -89,16 +89,17 @@ def remove(option, *lists):
 
 #autoload
 #if the file exists
-f = open("todoList.txt", "r")
-todo = eval(f.read())
-highTodo = todo[0]
-mediumTodo = todo[1]
-lowTodo = todo[2]
-
-#if the file doesn't exist
-#highTodo = ["High"]
-#mediumTodo = ["Medium"]
-#lowTodo = ["Low"]
+try:
+  f = open("todoList.txt", "r")
+  todo = eval(f.read())
+  highTodo = todo[0]
+  mediumTodo = todo[1]
+  lowTodo = todo[2]
+except Exception:  
+  #if the file doesn't exist
+  highTodo = ["High"]
+  mediumTodo = ["Medium"]
+  lowTodo = ["Low"]
 
 choice = ""
 
