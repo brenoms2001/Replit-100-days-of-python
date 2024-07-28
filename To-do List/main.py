@@ -1,4 +1,4 @@
-import os, time
+import os, time, random
 
 def menu():
   os.system("clear")
@@ -89,17 +89,19 @@ def remove(option, *lists):
 
 #autoload
 #if the file exists
-try:
+files = os.listdir()
+if "todoList.txt" in files:
   f = open("todoList.txt", "r")
   todo = eval(f.read())
   highTodo = todo[0]
   mediumTodo = todo[1]
   lowTodo = todo[2]
-except Exception:  
-  #if the file doesn't exist
+else:
   highTodo = ["High"]
   mediumTodo = ["Medium"]
   lowTodo = ["Low"]
+if "backups" not in files:
+  os.mkdir("backups")
 
 choice = ""
 
@@ -117,7 +119,6 @@ while choice != "exit":
       lowTodo.append(item)
 
     print("Item added successfully!")
-    time.sleep(2)
 
   elif choice == "view":
     priority=""
@@ -141,7 +142,6 @@ while choice != "exit":
     else:
       print("Invalid choice")
 
-    time.sleep(3)
 
   elif choice == "move":
     itemExist = view(highTodo, mediumTodo, lowTodo)
@@ -152,7 +152,6 @@ while choice != "exit":
       print("Item moved successifuly")
     else:
       print("No tasks to be moved")
-    time.sleep(3)
 
   elif choice == "edit":
     itemExist = view(highTodo, mediumTodo, lowTodo)
@@ -162,7 +161,6 @@ while choice != "exit":
       print("Successfully edited")
     else:
       print("No tasks to be moved")
-    time.sleep(3)
 
   elif choice == "remove":
     itemExist = view(highTodo, mediumTodo, lowTodo)
@@ -170,20 +168,27 @@ while choice != "exit":
       option = input("Which item do you want to remove? > ")
       remove(option, highTodo, mediumTodo, lowTodo)
     else:
-      print("No tasks to be removed")
-    time.sleep(3)
+      print("No tasks to be removed")    
 
   elif choice == "exit":
     print("Thank you for using My Todo List\n")
     exit()
+    
   else:
     print("Invalid command. Please type one of the given options.\n")
 
   #autosave
-  f = open("todoList.txt", "w")
-  todo = [highTodo, mediumTodo, lowTodo]
-  f.write(str(todo))
-  f.close()
+  if choice in ["add", "edit", "remove", "move"]:
+    todo = [highTodo, mediumTodo, lowTodo]
+    #backup
+    backupPath = f"backup{random.randint(0,1000)}.txt"
+    backupPath = os.path.join("backups/", backupPath)
+    backup = open(backupPath, "w")
+    backup.write(str(todo))
+    backup.close()
 
-
-
+    #saving
+    f = open("todoList.txt", "w")
+    f.write(str(todo))
+    f.close()
+  time.sleep(3)
