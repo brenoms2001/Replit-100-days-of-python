@@ -1,8 +1,15 @@
 from replit import db
-import os, time, datetime
+import os, time, datetime, random, hashlib
+
+def hashPassword(password, salt):
+  hasher = hashlib.sha256()
+  passwd = f"{password}{salt}".encode("utf-8")
+  hasher.update(passwd)
+  hashedPassword = hasher.hexdigest()
+  return hashedPassword
 
 def menu():
-  print("My Diary\n")
+  print("My Diary")
   option = ""
   while option not in ["1", "2", "3"]:
     option = input("\n1. Create Account\n2. Login\n3. Exit\n> ")
@@ -11,30 +18,31 @@ def menu():
 def createAccount():
   while True:
     user = input("Username: ").strip()
-    try:
-      test = db[user]
-      print(f"{user} already in use. Please choose another.")
-    except Exception:
-      passwd = input("Password: ").strip()
-      db[user] = {"password": passwd}
-      print("Account created successifully.")
-      break
-  
+    if user in db:
+      print(f"{user} already in use")
+      return
+    passwd = input("Password: ").strip()
+    salt = random.randint(0,99999)
+    hashedPassword = hashPassword(passwd, salt)
+    db[user] = {"password": hashedPassword, "salt": salt}
+    print("User registered successifully")
+    break
+
 def login():
   os.system("clear")
   while True:
-    user = input("\nUsername: ")
-    try:
-      password = db[user]["password"]
-      passwd = input("Password: ").strip()
-      if passwd == password:
-        time.sleep(2)
-        diary(user)
-        break
-      else:
-        print("Wrong password\n")
-    except Exception:
-      print("Invalid username.\n")
+    user = input("Username: ").strip()
+    if user not in db:
+      print(f"There is no user called {user} on the system")
+      return
+    passwd = input("Password: ").strip()
+    hashedPassword = hashPassword(passwd, db[user]["salt"])
+    if hashedPassword == db[user]["password"]:
+      diary(user)
+      break
+    else:
+      print("Invalid password.")
+      return
 
 def add(user):
   entry = input("Diary entry: ").strip()
@@ -45,6 +53,7 @@ def add(user):
 def view(user):
   keys = list(db[user].keys())
   keys.remove("password")
+  keys.remove("salt")
   keys.sort(reverse=True)
 
   if len(keys) == 0:
@@ -69,10 +78,10 @@ def diary(user):
     os.system("clear")
     print(f"Welcome to you private dictionary, {user}\n")
     option = input("1. Add\n2. View\n3. Exit\n\nWhat would you like to do? > ").strip()
-    
+
     time.sleep(2)
     os.system("clear")
-    
+
     if option == "1": 
       add(user)
     elif option == "2":
@@ -84,7 +93,7 @@ def diary(user):
     else:
       print("Invalid option. Choose another one.\n")
     time.sleep(3)
-    
+
 
 #main
 while True:
